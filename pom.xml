@@ -10,15 +10,15 @@
 
     <properties>
         <spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
-        <bluecove.version>2.1.0</bluecove.version>
+        <bluecove.version>0.5.1</bluecove.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>net.sf.bluecove</groupId>
-            <artifactId>bluecove</artifactId>
-            <version>${bluecove.version}</version>
-        </dependency>
+            <groupId>com.github.inteliotdevkite</groupId>
+            <artifactId>tinyb</artifactId>
+            <version>${tinyb.version}</version>
+    </dependency>
     </dependencies>
 
     <build>
