@@ -10,15 +10,15 @@
 
     <properties>
         <spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
-        <bluecove.version>0.5.1</bluecove.version>
+        <tinyb.version>0.5.1</tinyb.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>com.github.inteliotdevkite</groupId>
+            <groupId>com.github.inteliotdevkit</groupId>
             <artifactId>tinyb</artifactId>
             <version>${tinyb.version}</version>
-    </dependency>
+        </dependency>
     </dependencies>
 
     <build>
