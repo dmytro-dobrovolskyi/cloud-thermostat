@@ -10,7 +10,7 @@
 
     <properties>
         <spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
-        <tinyb.version>0.5.1</tinyb.version>
+        <tinyb.version>0.5.10</tinyb.version>
     </properties>
 
     <dependencies>
