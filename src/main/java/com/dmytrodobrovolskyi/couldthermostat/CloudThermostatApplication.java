@@ -1,5 +1,6 @@
 package com.dmytrodobrovolskyi.couldthermostat;
 
+import com.dmytrodobrovolskyi.couldthermostat.contract.Switch;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -12,5 +13,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class CloudThermostatApplication {
   public static void main(String[] args) {
     ConfigurableApplicationContext context = SpringApplication.run(CloudThermostatApplication.class);
+
+    context.getBean(Switch.class).isOn();
   }
 }
