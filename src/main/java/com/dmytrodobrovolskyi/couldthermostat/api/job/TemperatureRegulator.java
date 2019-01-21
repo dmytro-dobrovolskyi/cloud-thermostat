@@ -14,10 +14,10 @@ public class TemperatureRegulator {
 
   @Scheduled(fixedDelayString = "${application.thermostat.delayInMilliseconds}")
   public void regulateTemperature() {
-    log.info("Job to regualte temperature has started");
+    log.info("Job to regulate the temperature has started");
 
     thermostat.regulateTemperature();
 
-    log.info("Job to regualte temperature has finished");
+    log.info("Job to regulate the temperature has finished");
   }
 }

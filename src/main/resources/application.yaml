@@ -3,4 +3,4 @@ spring:
     cache-names: config
 application:
   thermostat:
-    delayInMilliseconds: 6000
+    delayInMilliseconds: 60000
