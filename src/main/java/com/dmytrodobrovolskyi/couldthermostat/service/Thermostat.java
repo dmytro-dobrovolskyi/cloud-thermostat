@@ -28,7 +28,7 @@ public class Thermostat {
       log.info("It's too cool but no worries it's gonna be all right. Turning on the heater!");
     } else if (isCoolingRequired(config, currentTemperature)) {
       powerSwitch.turnOn();
-      log.info("It's too hot but no worries it's gonna be all right. Turning on the heater!");
+      log.info("It's too hot but no worries it's gonna be all right. Turning on the cooler!");
     } else if (shouldTurnOff(config, currentTemperature)) {
       powerSwitch.turnOff();
       log.info("Looks like we did the job well. Turning off the heater/cooler");

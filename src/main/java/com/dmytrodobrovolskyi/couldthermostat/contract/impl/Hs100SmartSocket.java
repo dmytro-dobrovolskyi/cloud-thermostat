@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 public class Hs100SmartSocket implements Switch {
-  private static final String EXEC_HS100_SH = "../lib/hs100/hs100.sh ";
+  private static final String EXEC_HS100_SH = "/home/pi/lib/hs100/hs100.sh ";
 
 
   @Override
