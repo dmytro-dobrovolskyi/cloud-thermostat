@@ -4,3 +4,6 @@ spring:
 application:
   thermostat:
     delayInMilliseconds: 60000
+server:
+  servlet:
+    context-path: /cloud-thermostat/api

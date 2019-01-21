@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("cloud-thermostat/api/temperature")
+@RestController
 @RequiredArgsConstructor
 public class TemperatureApi {
   private final Thermometer thermometer;
 
-  @GetMapping
+  @GetMapping("/temperature")
   public double getTemperature() {
     return thermometer.temperature();
   }

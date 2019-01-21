@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@RestController("cloud-thermostat/api/config")
+@RestController
 @RequiredArgsConstructor
 public class ConfigApi {
   private final ConfigRepository configRepository;
 
-  @GetMapping
+  @GetMapping("/config")
   public Config getConfig() {
     return configRepository.getConfig().orElseThrow(() -> new NotFoundException("Config not found"));
   }
 
-  @PostMapping
+  @PostMapping("/config")
   public ResponseEntity<Config> saveConfig(@RequestBody Config config, UriComponentsBuilder uriComponentsBuilder) {
     Config savedConfig = configRepository.saveConfig(config);
 
