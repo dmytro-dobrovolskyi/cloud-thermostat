@@ -1,0 +1,6 @@
+spring:
+  cache:
+    cache-names: config
+application:
+  thermostat:
+    delayInMilliseconds: 6000
