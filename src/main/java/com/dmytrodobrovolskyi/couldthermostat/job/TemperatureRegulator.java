@@ -1,4 +1,4 @@
-package com.dmytrodobrovolskyi.couldthermostat.api.job;
+package com.dmytrodobrovolskyi.couldthermostat.job;
 
 import com.dmytrodobrovolskyi.couldthermostat.service.Thermostat;
 import lombok.RequiredArgsConstructor;
