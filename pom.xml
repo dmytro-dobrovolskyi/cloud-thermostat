@@ -20,6 +20,8 @@
         <lombok.version>1.18.4</lombok.version>
         <commons-io.version>2.6</commons-io.version>
         <caffeine.version>2.6.2</caffeine.version>
+        <google-cloud-logging-logback.version>0.81.0-alpha</google-cloud-logging-logback.version>
+        <spring-cloud-gcp-starter-logging.version>1.1.0.RELEASE</spring-cloud-gcp-starter-logging.version>
     </properties>
 
     <dependencies>
@@ -58,9 +60,22 @@
             <artifactId>caffeine</artifactId>
             <version>${caffeine.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-logging</artifactId>
+            <version>${spring-cloud-gcp-starter-logging.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.apr</groupId>
+            <artifactId>tcnative</artifactId>
+            <version>1.2.14</version>
+        </dependency>
     </dependencies>
 
     <build>
+        <directory>hotfix</directory>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
