@@ -3,6 +3,7 @@ package com.dmytrodobrovolskyi.couldthermostat.contract.impl;
 import com.dmytrodobrovolskyi.couldthermostat.contract.Thermometer;
 import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadTemperatureException;
 import org.springframework.stereotype.Component;
+import tinyb.BluetoothAdapter;
 import tinyb.BluetoothDevice;
 import tinyb.BluetoothManager;
 
@@ -14,9 +15,13 @@ public class TiltThermometer implements Thermometer {
 
   @Override
   public double temperature() {
-    BluetoothManager.getBluetoothManager().startDiscovery();
+    BluetoothAdapter bluetoothAdapter = BluetoothManager.getBluetoothManager()
+        .getAdapters()
+        .stream()
+        .findFirst()
+        .orElseThrow(CouldNotReadTemperatureException::new);
 
-    return BluetoothManager.getBluetoothManager().getDevices()
+    byte temperature = bluetoothAdapter.getDevices()
         .stream()
         .filter(bluetoothDevice -> bluetoothDevice.getAddress().equals(TILT_ADDRESS))
         .peek(tilt -> tilt.setTrusted(true))
@@ -25,6 +30,10 @@ public class TiltThermometer implements Thermometer {
         .map(data -> data.get(Short.valueOf(DATA_KEY)))
         .map(tiltData -> tiltData[TEMPERATURE_VALUE_INDEX])
         .orElseThrow(CouldNotReadTemperatureException::new);
+
+    new Thread(bluetoothAdapter::stopDiscovery).start();
+
+    return temperature;
   }
 }
 
