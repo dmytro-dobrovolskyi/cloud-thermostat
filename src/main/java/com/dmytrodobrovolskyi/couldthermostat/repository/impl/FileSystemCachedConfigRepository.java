@@ -19,7 +19,7 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class FileSystemCachedConfigRepository implements ConfigRepository {
-  private static final File CONFIG = new File(System.getProperty("user.dir") + "/config.json");
+  private static final File CONFIG = new File("/home/pi/cloud-thermostat/config.json");
 
   private final ObjectMapper objectMapper;
 
