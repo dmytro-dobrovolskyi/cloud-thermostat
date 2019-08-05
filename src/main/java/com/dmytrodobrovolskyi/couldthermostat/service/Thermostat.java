@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,6 +20,22 @@ public class Thermostat {
   private final Switch powerSwitch;
 
   public void regulateTemperature() {
+    try {
+      doRegulateTemperature();
+    } catch (Throwable ex) {
+      log.error("Disastrous situation!");
+      Optional<Config> config = configRepository.getConfig();
+
+      if (!config.isPresent() || config.get().isTurnOffIfDisaster()) {
+        log.error("Turning OFF");
+        powerSwitch.turnOff();
+      } else {
+        log.error("Keeping isOn={} according to the Config given: {}", powerSwitch.isOn(), config.get());
+      }
+    }
+  }
+
+  private void doRegulateTemperature() {
     Config config = configRepository.getConfig().orElseThrow(() -> new NotFoundException("No config found to Regulate Temperature"));
     double currentTemperature = thermometer.temperature();
 

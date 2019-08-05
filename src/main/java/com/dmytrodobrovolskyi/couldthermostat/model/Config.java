@@ -6,6 +6,7 @@ import lombok.Data;
 public class Config {
   private boolean isHeating;
   private double temperature;
+  private boolean turnOffIfDisaster = true;
 
   public boolean isCooling() {
     return !isHeating;

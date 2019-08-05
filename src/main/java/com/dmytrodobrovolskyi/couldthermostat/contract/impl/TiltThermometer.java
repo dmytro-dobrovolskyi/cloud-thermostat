@@ -22,7 +22,7 @@ public class TiltThermometer implements Thermometer {
 
   @Override
   @SneakyThrows
-  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 5000))
+  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 1500))
   public double temperature() {
     BluetoothAdapter bluetoothAdapter = BluetoothManager.getBluetoothManager()
         .getAdapters()
@@ -50,4 +50,3 @@ public class TiltThermometer implements Thermometer {
     return temperature;
   }
 }
-
