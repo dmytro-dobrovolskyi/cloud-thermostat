@@ -2,6 +2,9 @@ package com.dmytrodobrovolskyi.couldthermostat.contract.impl;
 
 import com.dmytrodobrovolskyi.couldthermostat.contract.Thermometer;
 import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadTemperatureException;
+import com.dmytrodobrovolskyi.couldthermostat.model.Config;
+import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -15,10 +18,12 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@RequiredArgsConstructor
 public class TiltThermometer implements Thermometer {
-  private static final String TILT_ADDRESS = "F0:11:BC:F4:2D:95";
   private static final String DATA_KEY = "76";
   private static final int TEMPERATURE_VALUE_INDEX = 19;
+
+  private final ConfigRepository configRepository;
 
   @Override
   @SneakyThrows
@@ -37,7 +42,11 @@ public class TiltThermometer implements Thermometer {
 
     byte temperature = bluetoothAdapter.getDevices()
         .stream()
-        .filter(bluetoothDevice -> bluetoothDevice.getAddress().equals(TILT_ADDRESS))
+        .filter(bluetoothDevice -> bluetoothDevice.getAddress().equals(
+            configRepository.getConfig()
+                .map(Config::getTiltAddress)
+                .orElseThrow(IllegalStateException::new))
+        )
         .peek(tilt -> tilt.setTrusted(true))
         .findFirst()
         .map(BluetoothDevice::getManufacturerData)
