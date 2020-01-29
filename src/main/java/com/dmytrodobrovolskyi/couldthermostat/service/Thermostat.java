@@ -68,18 +68,18 @@ public class Thermostat {
   }
 
   private boolean isCooledEnough(Config config, double currentTemperature) {
-    return config.isCooling() && currentTemperature <= config.getTemperature();
+    return config.isCooling() && currentTemperature <= config.getMinTemperature();
   }
 
   private boolean isHeatedEnough(Config config, double currentTemperature) {
-    return config.isHeating() && currentTemperature >= config.getTemperature();
+    return config.isHeating() && currentTemperature >= config.getMaxTemperature();
   }
 
   private boolean isTooCool(Config config, double currentTemperature) {
-    return currentTemperature < config.getTemperature();
+    return currentTemperature < config.getMinTemperature();
   }
 
   private boolean isTooHot(Config config, double currentTemperature) {
-    return currentTemperature > config.getTemperature();
+    return currentTemperature > config.getMaxTemperature();
   }
 }
