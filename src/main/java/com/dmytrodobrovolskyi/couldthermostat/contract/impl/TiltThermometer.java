@@ -20,14 +20,14 @@ import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
 public class TiltThermometer implements Thermometer {
-  private static final String DATA_KEY = "76";
+  private static final short DATA_KEY = 76;
   private static final int TEMPERATURE_VALUE_INDEX = 19;
 
   private final ConfigRepository configRepository;
 
   @Override
   @SneakyThrows
-  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 3500))
+  @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
   public double temperature() {
     BluetoothAdapter bluetoothAdapter = BluetoothManager.getBluetoothManager()
         .getAdapters()
@@ -50,7 +50,7 @@ public class TiltThermometer implements Thermometer {
         .peek(tilt -> tilt.setTrusted(true))
         .findFirst()
         .map(BluetoothDevice::getManufacturerData)
-        .map(data -> data.get(Short.valueOf(DATA_KEY)))
+        .map(data -> data.get(DATA_KEY))
         .map(tiltData -> tiltData[TEMPERATURE_VALUE_INDEX])
         .orElseThrow(CouldNotReadTemperatureException::new);
 
