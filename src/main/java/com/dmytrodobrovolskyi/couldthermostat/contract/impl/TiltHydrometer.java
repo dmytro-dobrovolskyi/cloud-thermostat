@@ -1,7 +1,7 @@
 package com.dmytrodobrovolskyi.couldthermostat.contract.impl;
 
 import com.dmytrodobrovolskyi.couldthermostat.contract.Hydrometer;
-import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadTemperatureException;
+import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadGravityException;
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ public class TiltHydrometer implements Hydrometer {
                 .getAdapters()
                 .stream()
                 .findFirst()
-                .orElseThrow(CouldNotReadTemperatureException::new);
+                .orElseThrow(CouldNotReadGravityException::new);
 
         bluetoothAdapter.setDiscoveryFilter(Collections.emptyList(), 0, 0, TransportType.LE);
         bluetoothAdapter.startDiscovery();
@@ -64,7 +64,7 @@ public class TiltHydrometer implements Hydrometer {
                 .map(data -> data.get(DATA_KEY))
                 .map(tiltData -> tiltData[GRAVITY_VALUE_INDEX])
                 .map(GRAVITY_IDENTIFIER_TO_HUMAN_READABLE_GRAVITY::get)
-                .orElseThrow(CouldNotReadTemperatureException::new);
+                .orElseThrow(CouldNotReadGravityException::new);
     }
 
     @Value

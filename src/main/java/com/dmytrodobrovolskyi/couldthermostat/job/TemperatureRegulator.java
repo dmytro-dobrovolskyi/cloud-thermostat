@@ -1,6 +1,5 @@
 package com.dmytrodobrovolskyi.couldthermostat.job;
 
-import com.dmytrodobrovolskyi.couldthermostat.contract.Hydrometer;
 import com.dmytrodobrovolskyi.couldthermostat.service.Thermostat;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,15 +10,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TemperatureRegulator {
-  private final Thermostat thermostat;
-  private final Hydrometer hydrometer;
+    private final Thermostat thermostat;
 
-  @Scheduled(fixedDelayString = "${application.thermostat.delayInMilliseconds}")
-  public void regulateTemperature() {
-    log.info("Job to regulate the temperature has started");
+    @Scheduled(fixedDelayString = "${application.thermostat.delayInMilliseconds}")
+    public void regulateTemperature() {
+        log.info("Job to regulate the temperature has started");
 
-    thermostat.regulateTemperature();
+        thermostat.regulateTemperature();
 
-    log.info("Job to regulate the temperature has finished");
-  }
+        log.info("Job to regulate the temperature has finished");
+    }
 }
