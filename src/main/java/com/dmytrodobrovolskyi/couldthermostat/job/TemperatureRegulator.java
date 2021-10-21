@@ -14,7 +14,7 @@ public class TemperatureRegulator {
   private final Thermostat thermostat;
   private final Hydrometer hydrometer;
 
-  @Scheduled(fixedDelayString = "${application.thermostat.delayInM  illiseconds}")
+  @Scheduled(fixedDelayString = "${application.thermostat.delayInMilliseconds}")
   public void regulateTemperature() {
     log.info("Job to regulate the temperature has started");
 
