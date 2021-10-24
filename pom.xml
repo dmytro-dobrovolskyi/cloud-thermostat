@@ -11,16 +11,17 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.2.RELEASE</version>
+        <version>2.5.6</version>
     </parent>
 
     <properties>
-        <spring-boot-maven-plugin.version>2.1.1.RELEASE</spring-boot-maven-plugin.version>
+        <spring-boot-maven-plugin.version>2.5.6</spring-boot-maven-plugin.version>
         <tinyb.version>0.5.10</tinyb.version>
         <lombok.version>1.18.4</lombok.version>
         <commons-io.version>2.6</commons-io.version>
         <caffeine.version>2.6.2</caffeine.version>
         <spring-retry.version>1.1.5.RELEASE</spring-retry.version>
+        <spring-cloud.version>2020.0.4</spring-cloud.version>
     </properties>
 
     <dependencies>
@@ -52,7 +53,6 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -82,7 +82,25 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

@@ -13,7 +13,7 @@ public class GravityApi {
     private final Hydrometer hydrometer;
 
     @GetMapping("/gravity")
-    public BigDecimal getTemperature() throws InterruptedException {
+    public BigDecimal getTemperature() {
         return hydrometer.gravity();
     }
 }

@@ -3,5 +3,5 @@ package com.dmytrodobrovolskyi.couldthermostat.contract;
 import java.math.BigDecimal;
 
 public interface Hydrometer {
-    BigDecimal gravity() throws InterruptedException;
+    BigDecimal gravity();
 }

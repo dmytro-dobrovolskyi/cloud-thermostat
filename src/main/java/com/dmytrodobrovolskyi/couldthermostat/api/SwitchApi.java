@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class SwitchApi {
-  private final Switch powerSwitch;
+    private final Switch powerSwitch;
 
-  @GetMapping("/power-switch/is-on")
-  public boolean isOn() {
-    return powerSwitch.isOn();
-  }
+    @GetMapping("/power-switch/is-on")
+    public boolean isOn() {
+        return powerSwitch.isOn();
+    }
 
-  @PostMapping("/power-switch/off")
-  public void off() {
-    powerSwitch.turnOff();
-  }
+    @PostMapping("/power-switch/off")
+    public void off() {
+        powerSwitch.turnOff();
+    }
 
-  @PostMapping("/power-switch/on")
-  public void on() {
-    powerSwitch.turnOn();
-  }
+    @PostMapping("/power-switch/on")
+    public void on() {
+        powerSwitch.turnOn();
+    }
 }

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class TemperatureApi {
-  private final Thermometer thermometer;
+    private final Thermometer thermometer;
 
-  @GetMapping("/temperature")
-  public double getTemperature() {
-    return thermometer.temperature();
-  }
+    @GetMapping("/temperature")
+    public double getTemperature() {
+        return thermometer.temperature();
+    }
 }

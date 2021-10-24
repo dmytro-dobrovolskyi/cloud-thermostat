@@ -17,22 +17,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequiredArgsConstructor
 public class ConfigApi {
-  private final ConfigRepository configRepository;
+    private final ConfigRepository configRepository;
 
-  @GetMapping("/config")
-  public Config getConfig() {
-    return configRepository.getConfig().orElseThrow(() -> new NotFoundException("Config not found"));
-  }
+    @GetMapping("/config")
+    public Config getConfig() {
+        return configRepository.getConfig().orElseThrow(() -> new NotFoundException("Config not found"));
+    }
 
-  @PostMapping("/config")
-  public ResponseEntity<Config> saveConfig(@RequestBody Config config, UriComponentsBuilder uriComponentsBuilder) {
-    Config savedConfig = configRepository.saveConfig(config);
+    @PostMapping("/config")
+    public ResponseEntity<Config> saveConfig(@RequestBody Config config, UriComponentsBuilder uriComponentsBuilder) {
+        Config savedConfig = configRepository.saveConfig(config);
 
-    UriComponents uriComponents = uriComponentsBuilder.path("api/v1/config").build();
+        UriComponents uriComponents = uriComponentsBuilder.path("api/v1/config").build();
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setLocation(uriComponents.toUri());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
 
-    return new ResponseEntity<>(savedConfig, headers, HttpStatus.CREATED);
-  }
+        return new ResponseEntity<>(savedConfig, headers, HttpStatus.CREATED);
+    }
 }

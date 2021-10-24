@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheConfig {
 
-  @Bean
-  public KeyGenerator configKeyGenerator() {
-    return (target, method, params) -> "config";
-  }
+    @Bean
+    public KeyGenerator configKeyGenerator() {
+        return (target, method, params) -> "config";
+    }
 }

@@ -1,11 +1,11 @@
 package com.dmytrodobrovolskyi.couldthermostat.contract;
 
 public interface Switch {
-  boolean isOn();
+    boolean isOn();
 
-  boolean isOff();
+    boolean isOff();
 
-  void turnOn();
+    void turnOn();
 
-  void turnOff();
+    void turnOff();
 }

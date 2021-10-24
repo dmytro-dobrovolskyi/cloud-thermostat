@@ -5,7 +5,7 @@ import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 import java.util.Optional;
 
 public interface ConfigRepository {
-  Optional<Config> getConfig();
+    Optional<Config> getConfig();
 
-  Config saveConfig(Config config);
+    Config saveConfig(Config config);
 }

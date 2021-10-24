@@ -13,15 +13,15 @@ import org.springframework.http.ResponseEntity;
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiError {
-  private HttpStatus httpStatus;
-  private String reason;
+    private HttpStatus httpStatus;
+    private String reason;
 
-  /**
-   * Application-specific error code. Optional.
-   */
-  private String errorCode;
+    /**
+     * Application-specific error code. Optional.
+     */
+    private String errorCode;
 
-  public ResponseEntity<ApiError> asResponseEntity() {
-    return new ResponseEntity<>(this, httpStatus);
-  }
+    public ResponseEntity<ApiError> asResponseEntity() {
+        return new ResponseEntity<>(this, httpStatus);
+    }
 }
