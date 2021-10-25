@@ -1,6 +1,6 @@
 package com.dmytrodobrovolskyi.couldthermostat.thirdparty;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +10,10 @@ import java.time.Instant;
 
 @Data
 @Builder
-@JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FermentationData {
     private String name;
-    private double temperature;
+    private double temp;
     private String tempUnit;
     private BigDecimal gravity;
     private String gravityUnit;

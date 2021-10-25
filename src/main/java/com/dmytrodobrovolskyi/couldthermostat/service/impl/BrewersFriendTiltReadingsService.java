@@ -43,7 +43,7 @@ public class BrewersFriendTiltReadingsService implements ReadingsService {
 
         return Collections.singletonList(FermentationData.builder()
                 .name("Tilt")
-                .temperature(tilt.temperature(data))
+                .temp(tilt.temperature(data))
                 .tempUnit("F")
                 .gravity(tilt.gravity(data))
                 .gravityUnit("G")
