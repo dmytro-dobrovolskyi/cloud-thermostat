@@ -9,6 +9,7 @@ import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class Tilt implements Thermometer, Hydrometer {
     private static final short DATA_KEY = 76;
@@ -113,6 +115,8 @@ public class Tilt implements Thermometer, Hydrometer {
 
     @Recover
     public void restartBluetooth() throws IOException {
+        log.error("Can't get readings. Trying to recover by restarting bluetooth service");
+        
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("sudo systemctl restart bluetooth");
     }
