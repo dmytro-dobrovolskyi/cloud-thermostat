@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import tinyb.BluetoothAdapter;
@@ -17,6 +18,7 @@ import tinyb.BluetoothDevice;
 import tinyb.BluetoothManager;
 import tinyb.TransportType;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
@@ -109,6 +111,12 @@ public class Tilt implements Thermometer, Hydrometer {
                 .orElseThrow(CouldNotReadGravityException::new);
     }
 
+    @Recover
+    public void restartBluetooth() throws IOException {
+        Runtime runtime = Runtime.getRuntime();
+        runtime.exec("sudo systemctl restart bluetooth");
+    }
+
     @Value
     private static class GravityIdentifierToHumanReadableGravity {
         int tiltGravityIdentifier;
@@ -132,5 +140,6 @@ public class Tilt implements Thermometer, Hydrometer {
         public byte getTiltGravityIdentifier() {
             return (byte) tiltGravityIdentifier;
         }
+
     }
 }
