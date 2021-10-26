@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -113,12 +114,17 @@ public class Tilt implements Thermometer, Hydrometer {
                 .orElseThrow(CouldNotReadGravityException::new);
     }
 
+    /**
+     * Restart bluetooth and wait for it to warm up so the original method can be still executed.
+     */
     @Recover
-    public double recoverTemperature(Throwable ex) throws IOException {
+    public double recoverTemperature(Throwable ex) throws IOException, InterruptedException {
         log.error("Can't get readings. Trying to recover by restarting bluetooth service", ex);
         
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("sudo systemctl restart bluetooth");
+        
+        Thread.sleep(TimeUnit.SECONDS.toMillis(10));
         
         return temperature();
     }
