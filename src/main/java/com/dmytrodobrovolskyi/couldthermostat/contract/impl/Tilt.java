@@ -114,12 +114,13 @@ public class Tilt implements Thermometer, Hydrometer {
     }
 
     @Recover
-    public double restartBluetooth(Throwable ex) throws IOException {
+    public double recoverTemperature(Throwable ex) throws IOException {
         log.error("Can't get readings. Trying to recover by restarting bluetooth service", ex);
         
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("sudo systemctl restart bluetooth");
         
+        return temperature();
     }
 
     @Value
