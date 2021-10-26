@@ -39,7 +39,7 @@ public class BrewersFriendTiltReadingsService implements ReadingsService {
     }
 
     private List<FermentationData> toTiltFermentationData() {
-        var data = tilt.getManufacturerData();
+        var data = tilt.manufacturerData();
 
         return Collections.singletonList(FermentationData.builder()
                 .name("Tilt")

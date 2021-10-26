@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,7 +58,7 @@ public class Tilt implements Thermometer, Hydrometer {
     @SneakyThrows
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
     public double temperature() {
-        var manufacturerData = getManufacturerData();
+        var manufacturerData = manufacturerData();
 
         return temperature(manufacturerData);
     }
@@ -66,13 +67,13 @@ public class Tilt implements Thermometer, Hydrometer {
     @SneakyThrows
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
     public BigDecimal gravity() {
-        var manufacturerData = getManufacturerData();
+        var manufacturerData = manufacturerData();
 
         return gravity(manufacturerData);
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
-    public Map<Short, byte[]> getManufacturerData() {
+    public Map<Short, byte[]> manufacturerData() {
         BluetoothAdapter bluetoothAdapter = BluetoothManager.getBluetoothManager()
                 .getAdapters()
                 .stream()
@@ -114,19 +115,33 @@ public class Tilt implements Thermometer, Hydrometer {
                 .orElseThrow(CouldNotReadGravityException::new);
     }
 
+    @Recover
+    public double recoverTemperature(Throwable ex) throws IOException, InterruptedException {
+        return doRecover(ex, this::temperature);
+    }
+
+    @Recover
+    public BigDecimal recoverGravity(Throwable ex) throws IOException, InterruptedException {
+        return doRecover(ex, this::gravity);
+    }
+
+    @Recover
+    public Map<Short, byte[]> recoverManufacturerData(Throwable ex) throws IOException, InterruptedException {
+        return doRecover(ex, this::manufacturerData);
+    }
+
     /**
      * Restart bluetooth and wait for it to warm up so the original method can be still executed.
      */
-    @Recover
-    public double recoverTemperature(Throwable ex) throws IOException, InterruptedException {
+    private <T> T doRecover(Throwable ex, Supplier<T> methodToRecover) throws IOException, InterruptedException {
         log.error("Can't get readings. Trying to recover by restarting bluetooth service", ex);
-        
+
         Runtime runtime = Runtime.getRuntime();
         runtime.exec("sudo systemctl restart bluetooth");
-        
+
         Thread.sleep(TimeUnit.SECONDS.toMillis(10));
 
-        return temperature();
+        return methodToRecover.get();
     }
 
     @Value
