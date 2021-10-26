@@ -125,7 +125,7 @@ public class Tilt implements Thermometer, Hydrometer {
         runtime.exec("sudo systemctl restart bluetooth");
         
         Thread.sleep(TimeUnit.SECONDS.toMillis(10));
-        
+
         return temperature();
     }
 
