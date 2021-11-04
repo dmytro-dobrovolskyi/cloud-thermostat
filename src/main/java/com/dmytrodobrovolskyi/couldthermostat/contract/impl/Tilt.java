@@ -5,7 +5,6 @@ import com.dmytrodobrovolskyi.couldthermostat.contract.Thermometer;
 import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadGravityException;
 import com.dmytrodobrovolskyi.couldthermostat.exception.CouldNotReadTemperatureException;
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
-import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -51,14 +51,11 @@ public class Tilt implements Thermometer, Hydrometer {
                     GravityIdentifierToHumanReadableGravity::getHumanReadableGravity
             ));
 
-
-    private final ConfigRepository configRepository;
-
     @Override
     @SneakyThrows
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
-    public double temperature() {
-        var manufacturerData = manufacturerData();
+    public double temperature(Config config) {
+        var manufacturerData = manufacturerData(config);
 
         return temperature(manufacturerData);
     }
@@ -66,14 +63,17 @@ public class Tilt implements Thermometer, Hydrometer {
     @Override
     @SneakyThrows
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
-    public BigDecimal gravity() {
-        var manufacturerData = manufacturerData();
+    public BigDecimal gravity(Config config) {
+        var manufacturerData = manufacturerData(config);
 
         return gravity(manufacturerData);
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 7000))
-    public Map<Short, byte[]> manufacturerData() {
+    public Map<Short, byte[]> manufacturerData(Config config) {
+        Objects.requireNonNull(config);
+        Objects.requireNonNull(config.getMeasuringDeviceKey());
+
         BluetoothAdapter bluetoothAdapter = BluetoothManager.getBluetoothManager()
                 .getAdapters()
                 .stream()
@@ -86,11 +86,7 @@ public class Tilt implements Thermometer, Hydrometer {
 
         var manufacturerData = bluetoothAdapter.getDevices()
                 .stream()
-                .filter(bluetoothDevice -> bluetoothDevice.getAddress().equals(
-                        configRepository.getConfig()
-                                .map(Config::getTiltAddress)
-                                .orElseThrow(IllegalStateException::new))
-                )
+                .filter(bluetoothDevice -> bluetoothDevice.getAddress().equals(config.getMeasuringDeviceKey()))
                 .peek(tilt -> tilt.setTrusted(true))
                 .findFirst()
                 .map(BluetoothDevice::getManufacturerData)
@@ -116,18 +112,18 @@ public class Tilt implements Thermometer, Hydrometer {
     }
 
     @Recover
-    public double recoverTemperature(Throwable ex) throws IOException, InterruptedException {
-        return doRecover(ex, this::temperature);
+    public double recoverTemperature(Throwable ex, Config config) throws IOException, InterruptedException {
+        return doRecover(ex, () -> temperature(config));
     }
 
     @Recover
-    public BigDecimal recoverGravity(Throwable ex) throws IOException, InterruptedException {
-        return doRecover(ex, this::gravity);
+    public BigDecimal recoverGravity(Throwable ex, Config config) throws IOException, InterruptedException {
+        return doRecover(ex, () -> gravity(config));
     }
 
     @Recover
-    public Map<Short, byte[]> recoverManufacturerData(Throwable ex) throws IOException, InterruptedException {
-        return doRecover(ex, this::manufacturerData);
+    public Map<Short, byte[]> recoverManufacturerData(Throwable ex, Config config) throws IOException, InterruptedException {
+        return doRecover(ex, () -> manufacturerData(config));
     }
 
     /**

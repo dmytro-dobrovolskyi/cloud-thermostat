@@ -1,8 +1,7 @@
 package com.dmytrodobrovolskyi.couldthermostat.api;
 
-import com.dmytrodobrovolskyi.couldthermostat.exception.NotFoundException;
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
-import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
+import com.dmytrodobrovolskyi.couldthermostat.service.ConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,19 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ConfigApi {
-    private final ConfigRepository configRepository;
+    private final ConfigService configService;
 
     @GetMapping("/config")
-    public Config getConfig() {
-        return configRepository.getConfig().orElseThrow(() -> new NotFoundException("Config not found"));
+    public List<Config> getConfig() {
+        return configService.getAllConfigs();
     }
 
     @PostMapping("/config")
     public ResponseEntity<Config> saveConfig(@RequestBody Config config, UriComponentsBuilder uriComponentsBuilder) {
-        Config savedConfig = configRepository.saveConfig(config);
+        Config savedConfig = configService.saveConfig(config);
 
         UriComponents uriComponents = uriComponentsBuilder.path("api/v1/config").build();
 

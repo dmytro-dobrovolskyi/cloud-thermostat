@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class CacheConfig {
 
     @Bean
-    public KeyGenerator configKeyGenerator() {
-        return (target, method, params) -> "config";
+    public KeyGenerator tapoCacheKeyGenerator() {
+        return (target, method, params) -> "tapo-p100-plug-cache-key";
     }
 }

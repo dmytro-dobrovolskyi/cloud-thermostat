@@ -1,11 +1,13 @@
 package com.dmytrodobrovolskyi.couldthermostat.contract;
 
+import com.dmytrodobrovolskyi.couldthermostat.model.Config;
+
 public interface Switch {
-    boolean isOn();
+    boolean isOn(Config config);
 
-    boolean isOff();
+    boolean isOff(Config config);
 
-    void turnOn();
+    void turnOn(Config config);
 
-    void turnOff();
+    void turnOff(Config config);
 }

@@ -13,6 +13,7 @@ public class BrewSession {
     private String id;
     private Phase phase;
     private String recipeTitle;
+    private String batchcode;
 
     public boolean isFermentationInProgress() {
         return phase == Phase.PRIMARY_FERMENTATION

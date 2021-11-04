@@ -2,10 +2,10 @@ package com.dmytrodobrovolskyi.couldthermostat.repository;
 
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface ConfigRepository {
-    Optional<Config> getConfig();
+    List<Config> findAllConfigs();
 
     Config saveConfig(Config config);
 }

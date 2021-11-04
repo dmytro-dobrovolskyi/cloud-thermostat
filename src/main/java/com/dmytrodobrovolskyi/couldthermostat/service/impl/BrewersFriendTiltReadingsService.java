@@ -1,54 +1,72 @@
 package com.dmytrodobrovolskyi.couldthermostat.service.impl;
 
 import com.dmytrodobrovolskyi.couldthermostat.contract.impl.Tilt;
+import com.dmytrodobrovolskyi.couldthermostat.model.Config;
+import com.dmytrodobrovolskyi.couldthermostat.service.ConfigService;
 import com.dmytrodobrovolskyi.couldthermostat.service.ReadingsService;
 import com.dmytrodobrovolskyi.couldthermostat.thirdparty.BrewersFriendClient;
 import com.dmytrodobrovolskyi.couldthermostat.thirdparty.FermentationData;
 import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.BrewSession;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class BrewersFriendTiltReadingsService implements ReadingsService {
+    private static final int LIMIT = 5;
+
     private final BrewersFriendClient client;
+    private final ConfigService configService;
     private final Tilt tilt;
 
     @Override
     public void sendReadings() {
         log.info("Sending readings to Brewer's Friend");
-        
-        client.getLatestBrewSessions(3)
+
+        var configByBatchcode = configService.getAllConfigs()
+                .stream()
+                .collect(Collectors.toMap(Config::getBatchcode, Function.identity()));
+
+        client.getLatestBrewSessions(LIMIT)
                 .getBrewSessions()
                 .stream()
                 .filter(BrewSession::isFermentationInProgress)
-                .findFirst()
-                .map(BrewSession::getId)
-                .ifPresent(brewSessionId -> client.importFermentationData(
-                        brewSessionId,
-                        toTiltFermentationData()
-                ));
-        
+                .map(brewSession -> CompletableFuture.supplyAsync(() -> new BrewSessionIdToTiltReadings(
+                        brewSession.getId(),
+                        tilt.manufacturerData(configByBatchcode.get(brewSession.getBatchcode()))))
+                )
+                .map(readingsFuture -> readingsFuture.thenAccept(this::sendReadingsToBrewersFriend))
+                .forEach(CompletableFuture::join);
+
         log.info("Operation's finished");
     }
 
-    private List<FermentationData> toTiltFermentationData() {
-        var data = tilt.manufacturerData();
-
-        return Collections.singletonList(FermentationData.builder()
+    private void sendReadingsToBrewersFriend(BrewSessionIdToTiltReadings readings) {
+        var fermentationData = Collections.singletonList(FermentationData.builder()
                 .name("Tilt")
-                .temp(tilt.temperature(data))
+                .temp(tilt.temperature(readings.getReadings()))
                 .tempUnit("F")
-                .gravity(tilt.gravity(data))
+                .gravity(tilt.gravity(readings.getReadings()))
                 .gravityUnit("G")
                 .createdAt(Instant.now())
-                .build()
-        );
+                .build());
+
+        client.importFermentationData(readings.getBrewSessionId(), fermentationData);
+    }
+
+    @Value
+    private static class BrewSessionIdToTiltReadings {
+        String brewSessionId;
+        Map<Short, byte[]> readings;
     }
 }

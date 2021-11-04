@@ -1,6 +1,6 @@
 spring:
   cache:
-    cache-names: config
+    cache-names: tapo-p100-plug-cache
   task:
     scheduling:
       pool:
