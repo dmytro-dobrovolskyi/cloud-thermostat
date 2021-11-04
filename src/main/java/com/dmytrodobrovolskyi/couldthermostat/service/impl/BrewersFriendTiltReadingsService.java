@@ -35,19 +35,21 @@ public class BrewersFriendTiltReadingsService implements ReadingsService {
 
         var configByBatchcode = configService.getAllConfigs()
                 .stream()
+                .filter(Config::isEnabled)
                 .collect(Collectors.toMap(Config::getBatchcode, Function.identity()));
 
-        client.getLatestBrewSessions(LIMIT)
-                .getBrewSessions()
-                .stream()
-                .filter(BrewSession::isFermentationInProgress)
-                .map(brewSession -> CompletableFuture.supplyAsync(() -> new BrewSessionIdToTiltReadings(
-                        brewSession.getId(),
-                        tilt.manufacturerData(configByBatchcode.get(brewSession.getBatchcode()))))
-                )
-                .map(readingsFuture -> readingsFuture.thenAccept(this::sendReadingsToBrewersFriend))
-                .forEach(CompletableFuture::join);
-
+        if (!configByBatchcode.isEmpty()) {
+            client.getLatestBrewSessions(LIMIT)
+                    .getBrewSessions()
+                    .stream()
+                    .filter(BrewSession::isFermentationInProgress)
+                    .map(brewSession -> CompletableFuture.supplyAsync(() -> new BrewSessionIdToTiltReadings(
+                            brewSession.getId(),
+                            tilt.manufacturerData(configByBatchcode.get(brewSession.getBatchcode()))))
+                    )
+                    .map(readingsFuture -> readingsFuture.thenAccept(this::sendReadingsToBrewersFriend))
+                    .forEach(CompletableFuture::join);
+        }
         log.info("Operation's finished");
     }
 

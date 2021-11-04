@@ -20,6 +20,8 @@ public class Thermostat {
 
     public void regulateTemperature() {
         configService.getAllConfigs()
+                .stream()
+                .filter(Config::isEnabled)
                 .forEach(config -> CompletableFuture
                         .runAsync(() -> doRegulateTemperature(config))
                         .exceptionally(ex -> handleError(ex, config))

@@ -13,6 +13,7 @@ public class Config {
     private boolean turnOffIfDisaster = true;
     private SmartPlugType smartPlugType;
     private AdditionalData additionalData;
+    private boolean enabled;
 
     public boolean isCooling() {
         return !isHeating;
