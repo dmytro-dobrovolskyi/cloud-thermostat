@@ -1,1 +1,38 @@
-[{"measuringDeviceKey":null,"batchcode":"#1","minTemperature":0.0,"maxTemperature":0.0,"turnOffIfDisaster":true,"smartPlugType":"TAPO_P100","additionalData":{"smartPlugIpAddress":"192.168.87.110","smartPlugCloudUsername":"dobrovolskyi.dmytro@gmail.com","smartPlugCloudPassword":"b-vFDQ3.4x6vsxsL2Qi2","smartPlugExecutablePath":null,"comment":null},"cooling":false,"heating":true},{"measuringDeviceKey":"1","batchcode":null,"minTemperature":0.0,"maxTemperature":0.0,"turnOffIfDisaster":true,"smartPlugType":null,"additionalData":null,"cooling":false,"heating":true},{"measuringDeviceKey":"2","batchcode":null,"minTemperature":0.0,"maxTemperature":0.0,"turnOffIfDisaster":true,"smartPlugType":null,"additionalData":null,"cooling":true,"heating":false},{"measuringDeviceKey":"3","batchcode":"#33333","minTemperature":0.0,"maxTemperature":0.0,"turnOffIfDisaster":true,"smartPlugType":null,"additionalData":null,"cooling":true,"heating":false}]
+[
+  {
+    "measuringDeviceKey": "CD:99:58:C7:C8:57",
+    "batchcode": "APNNW6E001",
+    "minTemperature": 32.0,
+    "maxTemperature": 34.0,
+    "turnOffIfDisaster": false,
+    "smartPlugType": "TAPO_P100",
+    "additionalData": {
+      "smartPlugIpAddress": "192.168.87.110",
+      "smartPlugCloudUsername": "dobrovolskyi.dmytro@gmail.com",
+      "smartPlugCloudPassword": "b-vFDQ3.4x6vsxsL2Qi2",
+      "smartPlugExecutablePath": null,
+      "comment": "Orange Tilt"
+    },
+    "enabled": false,
+    "heating": false,
+    "cooling": true
+  },
+  {
+    "measuringDeviceKey": "E0:81:98:11:55:AC",
+    "batchcode": "FSINO001",
+    "minTemperature": 71.0,
+    "maxTemperature": 72.0,
+    "turnOffIfDisaster": true,
+    "smartPlugType": "HS100",
+    "additionalData": {
+      "smartPlugIpAddress": "192.168.87.101",
+      "smartPlugCloudUsername": null,
+      "smartPlugCloudPassword": null,
+      "smartPlugExecutablePath": "/home/pi/lib/hs100/hs100.sh",
+      "comment": "Black Tilt"
+    },
+    "enabled": true,
+    "heating": true,
+    "cooling": false
+  }
+]

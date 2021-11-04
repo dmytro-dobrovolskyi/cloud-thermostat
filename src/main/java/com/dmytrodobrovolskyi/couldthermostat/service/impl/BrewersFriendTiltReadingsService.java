@@ -31,26 +31,29 @@ public class BrewersFriendTiltReadingsService implements ReadingsService {
 
     @Override
     public void sendReadings() {
-        log.info("Sending readings to Brewer's Friend");
-
         var configByBatchcode = configService.getAllConfigs()
                 .stream()
                 .filter(Config::isEnabled)
                 .collect(Collectors.toMap(Config::getBatchcode, Function.identity()));
 
         if (!configByBatchcode.isEmpty()) {
+            log.info("Sending readings to Brewer's Friend for batches: {}", configByBatchcode.keySet());
+
             client.getLatestBrewSessions(LIMIT)
                     .getBrewSessions()
                     .stream()
                     .filter(BrewSession::isFermentationInProgress)
+                    .filter(brewSession -> configByBatchcode.get(brewSession.getBatchcode()) != null)
                     .map(brewSession -> CompletableFuture.supplyAsync(() -> new BrewSessionIdToTiltReadings(
                             brewSession.getId(),
                             tilt.manufacturerData(configByBatchcode.get(brewSession.getBatchcode()))))
                     )
                     .map(readingsFuture -> readingsFuture.thenAccept(this::sendReadingsToBrewersFriend))
+                    .map(readingsFuture -> readingsFuture.exceptionally(this::handleError))
                     .forEach(CompletableFuture::join);
+
+            log.info("Send readings operation's finished");
         }
-        log.info("Operation's finished");
     }
 
     private void sendReadingsToBrewersFriend(BrewSessionIdToTiltReadings readings) {
@@ -66,8 +69,15 @@ public class BrewersFriendTiltReadingsService implements ReadingsService {
         client.importFermentationData(readings.getBrewSessionId(), fermentationData);
     }
 
+    private Void handleError(Throwable ex) {
+        log.error("Failed to send readings to Brewer's Friend", ex);
+
+        return null;
+    }
+
     @Value
     private static class BrewSessionIdToTiltReadings {
+
         String brewSessionId;
         Map<Short, byte[]> readings;
     }
