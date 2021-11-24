@@ -5,12 +5,11 @@ import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 import com.dmytrodobrovolskyi.couldthermostat.service.ConfigService;
 import com.dmytrodobrovolskyi.couldthermostat.service.ReadingsService;
 import com.dmytrodobrovolskyi.couldthermostat.thirdparty.BrewersFriendClient;
-import com.dmytrodobrovolskyi.couldthermostat.thirdparty.FermentationData;
-import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.BrewSession;
+import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend.BrewSession;
+import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend.FermentationData;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -19,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
 public class BrewersFriendTiltReadingsService implements ReadingsService {

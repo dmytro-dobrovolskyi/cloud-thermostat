@@ -3,11 +3,11 @@ package com.dmytrodobrovolskyi.couldthermostat.contract;
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 
 public interface Switch {
-    boolean isOn(Config config);
+    boolean isOn(Config.SmartPlug smartPlugConfig);
 
-    boolean isOff(Config config);
+    boolean isOff(Config.SmartPlug smartPlugConfig);
 
-    void turnOn(Config config);
+    void turnOn(Config.SmartPlug smartPlugConfig);
 
-    void turnOff(Config config);
+    void turnOff(Config.SmartPlug smartPlugConfig);
 }

@@ -8,7 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -22,56 +24,69 @@ public class Thermostat {
         configService.getAllConfigs()
                 .stream()
                 .filter(Config::isEnabled)
-                .forEach(config -> CompletableFuture
+                .map(config -> CompletableFuture
                         .runAsync(() -> doRegulateTemperature(config))
                         .exceptionally(ex -> handleError(ex, config))
-                );
+                )
+                .forEach(CompletableFuture::join);
     }
 
     private void doRegulateTemperature(Config config) {
         double currentTemperature = thermometer.temperature(config);
-        var powerSwitch = switchByType.get(config.getSmartPlugType().name());
+        var cooler = findSwitchFor(config.getCoolerConfig());
+        var heater = findSwitchFor(config.getHeaterConfig());
 
         log.info("Current temperature is {}", currentTemperature);
 
-        if (isHeatingRequired(config, currentTemperature)) {
-            powerSwitch.turnOn(config);
-            log.info("It's too cool but no worries it's gonna be all right. Turning on the heater!");
-        } else if (isCoolingRequired(config, currentTemperature)) {
-            powerSwitch.turnOn(config);
-            log.info("It's too hot but no worries it's gonna be all right. Turning on the cooler!");
-        } else if (shouldTurnOff(config, currentTemperature)) {
-            powerSwitch.turnOff(config);
-            log.info("Looks like we did the job well. Turning off the heater/cooler");
-        } else {
-            log.info("Looks like you're all set!");
+        if (cooler.isPresent()) {
+            if (cooler.get().isOff(config.getCoolerConfig()) && isTooHot(config, currentTemperature)) {
+                cooler.get().turnOn(config.getCoolerConfig());
+
+                log.info("It's too hot but no worries it's gonna be all right. Turning on the cooler!");
+            } else if (isCooledEnough(config, currentTemperature)) {
+                cooler.get().turnOff(config.getCoolerConfig());
+
+                log.info("Looks like we did the job well. Turning off the cooler");
+            } else {
+                log.info("Continuing with the current cooling mode");
+            }
+        }
+        if (heater.isPresent() && syncDeviceIsCoolEnough(config)) {
+            if (heater.get().isOff(config.getHeaterConfig()) && isTooCool(config, currentTemperature)) {
+                heater.get().turnOn(config.getHeaterConfig());
+
+                log.info("It's too cool but no worries it's gonna be all right. Turning on the heater!");
+            } else if (isHeatedEnough(config, currentTemperature)) {
+                heater.get().turnOff(config.getHeaterConfig());
+
+                log.info("Looks like we did the job well. Turning off the heater");
+            } else {
+                log.info("Continuing with the current heating mode");
+            }
         }
     }
 
-    private boolean isCoolingRequired(Config config, double currentTemperature) {
-        var powerSwitch = switchByType.get(config.getSmartPlugType().name());
-
-        return config.isCooling() && isTooHot(config, currentTemperature) && powerSwitch.isOff(config);
+    private boolean syncDeviceIsCoolEnough(Config config) {
+        return Optional.ofNullable(config.getAdditionalData())
+                .flatMap(Config.AdditionalData::getSynchronizeWith)
+                .flatMap(configService::getConfigByDeviceKey)
+                .map(syncDeviceConfig -> isCooledEnough(syncDeviceConfig, thermometer.temperature(syncDeviceConfig)))
+                .orElse(true);
     }
 
-    private boolean isHeatingRequired(Config config, double currentTemperature) {
-        var powerSwitch = switchByType.get(config.getSmartPlugType().name());
-
-        return config.isHeating() && isTooCool(config, currentTemperature) && powerSwitch.isOff(config);
-    }
-
-    private boolean shouldTurnOff(Config config, double currentTemperature) {
-        var powerSwitch = switchByType.get(config.getSmartPlugType().name());
-
-        return powerSwitch.isOn(config) && (isHeatedEnough(config, currentTemperature) || isCooledEnough(config, currentTemperature));
+    private Optional<Switch> findSwitchFor(Config.SmartPlug smartPlug) {
+        return Optional.ofNullable(smartPlug)
+                .map(Config.SmartPlug::getType)
+                .map(Enum::name)
+                .map(switchByType::get);
     }
 
     private boolean isCooledEnough(Config config, double currentTemperature) {
-        return config.isCooling() && currentTemperature <= config.getMinTemperature();
+        return currentTemperature <= config.getMinTemperature();
     }
 
     private boolean isHeatedEnough(Config config, double currentTemperature) {
-        return config.isHeating() && currentTemperature >= config.getMaxTemperature();
+        return currentTemperature >= config.getMaxTemperature();
     }
 
     private boolean isTooCool(Config config, double currentTemperature) {
@@ -83,13 +98,23 @@ public class Thermostat {
     }
 
     private Void handleError(Throwable ex, Config config) {
-        var powerSwitch = switchByType.get(config.getSmartPlugType().name());
+        log.error("Failed to regulate temperature", ex);
 
+        var smartPlugConfigs = Stream.of(config.getCoolerConfig(), config.getHeaterConfig());
         if (config.isTurnOffIfDisaster()) {
             log.error("Turning OFF");
-            powerSwitch.turnOff(config);
+
+            smartPlugConfigs.forEach(smartPlugConfig -> findSwitchFor(smartPlugConfig)
+                    .ifPresent(powerSwitch -> powerSwitch.turnOff(smartPlugConfig))
+            );
         } else {
-            log.error("Keeping isOn={} according to the Config given: {}", powerSwitch.isOn(config), config);
+            smartPlugConfigs.forEach(smartPlugConfig -> findSwitchFor(smartPlugConfig)
+                    .ifPresent(powerSwitch -> log.error(
+                            "Keeping isOn={} according to the Config given: {}",
+                            powerSwitch.isOn(smartPlugConfig),
+                            config)
+                    )
+            );
         }
         return null;
     }

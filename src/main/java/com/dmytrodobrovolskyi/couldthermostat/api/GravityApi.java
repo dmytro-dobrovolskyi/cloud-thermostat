@@ -17,6 +17,6 @@ public class GravityApi {
 
     @GetMapping("/{deviceKey}/gravity")
     public BigDecimal getTemperature(@PathVariable String deviceKey) {
-        return hydrometer.gravity(configService.getAllByDeviceKey().get(deviceKey));
+        return hydrometer.gravity(configService.getAllGroupingByDeviceKey().get(deviceKey));
     }
 }

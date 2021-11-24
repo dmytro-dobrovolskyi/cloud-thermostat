@@ -15,6 +15,6 @@ public class TemperatureApi {
 
     @GetMapping("/{deviceKey}/temperature")
     public double getTemperature(@PathVariable String deviceKey) {
-        return thermometer.temperature(configService.getAllByDeviceKey().get(deviceKey));
+        return thermometer.temperature(configService.getAllGroupingByDeviceKey().get(deviceKey));
     }
 }

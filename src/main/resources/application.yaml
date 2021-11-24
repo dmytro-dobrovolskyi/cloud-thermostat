@@ -9,10 +9,12 @@ application:
   thermostat:
     delayInMilliseconds: 60000 # 1 min
   readings-publisher:
-    delayInMilliseconds: 330000 # 5 min and 30 secs
+    delayInMilliseconds: 930000 # 15 min and 30 secs
 server:
   servlet:
     context-path: /cloud-thermostat/api
 thirdparty:
   brewers-friend:
     api-key:
+  brewfather:
+    stream-id: 'BLVgXEqUZyoaxF'

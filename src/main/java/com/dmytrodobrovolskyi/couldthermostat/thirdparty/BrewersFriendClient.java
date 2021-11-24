@@ -1,8 +1,9 @@
 package com.dmytrodobrovolskyi.couldthermostat.thirdparty;
 
 import com.dmytrodobrovolskyi.couldthermostat.config.BrewersFriendConfig;
-import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.BrewSessionsPage;
-import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.FermentationDataImportResponse;
+import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend.BrewSessionsPage;
+import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend.FermentationData;
+import com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend.FermentationDataImportResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

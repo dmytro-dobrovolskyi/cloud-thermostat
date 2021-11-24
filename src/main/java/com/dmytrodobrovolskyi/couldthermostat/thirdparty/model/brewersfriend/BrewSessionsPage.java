@@ -1,4 +1,4 @@
-package com.dmytrodobrovolskyi.couldthermostat.thirdparty.model;
+package com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

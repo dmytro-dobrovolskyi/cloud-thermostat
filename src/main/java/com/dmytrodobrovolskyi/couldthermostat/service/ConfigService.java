@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -20,12 +21,16 @@ public class ConfigService {
         return configRepository.findAllConfigs();
     }
 
-    public Map<String, Config> getAllByDeviceKey() {
+    public Map<String, Config> getAllGroupingByDeviceKey() {
         return getAllConfigs()
                 .stream()
                 .collect(Collectors.toMap(Config::getMeasuringDeviceKey, Function.identity()));
     }
 
+    public Optional<Config> getConfigByDeviceKey(String deviceKey) {
+        return Optional.ofNullable(getAllGroupingByDeviceKey().get(deviceKey));
+    }
+    
     @CacheEvict(value = "tapo-p100-plug-cache", keyGenerator = "tapoCacheKeyGenerator")
     public Config saveConfig(Config config) {
         return configRepository.saveConfig(config);

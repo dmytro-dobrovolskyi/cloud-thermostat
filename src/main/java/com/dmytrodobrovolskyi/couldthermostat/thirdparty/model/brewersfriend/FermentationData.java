@@ -1,4 +1,4 @@
-package com.dmytrodobrovolskyi.couldthermostat.thirdparty;
+package com.dmytrodobrovolskyi.couldthermostat.thirdparty.model.brewersfriend;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

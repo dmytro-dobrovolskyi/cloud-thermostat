@@ -24,46 +24,34 @@ public class TapoP100SmartSocket implements Switch {
 
     @Override
     @SneakyThrows
-    public boolean isOn(Config config) {
-        return tapoPlugProvider.getPlug(config).getDeviceInfo().getDevice_on();
+    public boolean isOn(Config.SmartPlug smartPlugConfig) {
+        return tapoPlugProvider.getPlug(smartPlugConfig).getDeviceInfo().getDevice_on();
     }
 
     @Override
-    public boolean isOff(Config config) {
-        return !isOn(config);
-    }
-
-    @Override
-    @SneakyThrows
-    public void turnOn(Config config) {
-        tapoPlugProvider.getPlug(config).turnOn();
+    public boolean isOff(Config.SmartPlug smartPlugConfig) {
+        return !isOn(smartPlugConfig);
     }
 
     @Override
     @SneakyThrows
-    public void turnOff(Config config) {
-        tapoPlugProvider.getPlug(config).turnOff();
+    public void turnOn(Config.SmartPlug smartPlugConfig) {
+        tapoPlugProvider.getPlug(smartPlugConfig).turnOn();
     }
 
-    private String resolveCommand(Config config, String command) {
-        var additionalData = config.getAdditionalData();
-
-        return String.format(
-                "%s -i %s %s",
-                additionalData.getSmartPlugExecutablePath(),
-                additionalData.getSmartPlugIpAddress(),
-                command
-        );
+    @Override
+    @SneakyThrows
+    public void turnOff(Config.SmartPlug smartPlugConfig) {
+        tapoPlugProvider.getPlug(smartPlugConfig).turnOff();
     }
-
 
     @Component
     static class TapoPlugProvider {
 
         @Retryable(backoff = @Backoff(delay = 5000))
-        @Cacheable(value = "tapo-p100-plug-cache", keyGenerator = "tapoCacheKeyGenerator")
-        public PlugP100 getPlug(Config config) throws Exception {
-            var plug = new PlugP100(config.getAdditionalData().getSmartPlugIpAddress(), config.getAdditionalData().getSmartPlugCloudUsername(), config.getAdditionalData().getSmartPlugCloudPassword());
+        @Cacheable(value = "tapo-p100-plug-cache", key = "#smartPlugConfig.ipAddress")
+        public PlugP100 getPlug(Config.SmartPlug smartPlugConfig) throws Exception {
+            var plug = new PlugP100(smartPlugConfig.getIpAddress(), smartPlugConfig.getCloudUsername(), smartPlugConfig.getCloudPassword());
 
             disableObjectMapperFailOnUnknownProperties(plug);
 
@@ -74,9 +62,9 @@ public class TapoP100SmartSocket implements Switch {
         }
 
         @Recover
-        @CacheEvict(value = "tapo-p100-plug-cache", keyGenerator = "tapoCacheKeyGenerator")
-        public PlugP100 recoverGetPlug(Throwable throwable, Config config) throws Exception {
-            return getPlug(config);
+        @CacheEvict(value = "tapo-p100-plug-cache", key = "#smartPlugConfig.ipAddress")
+        public PlugP100 recoverGetPlug(Throwable throwable, Config.SmartPlug smartPlugConfig) throws Exception {
+            return getPlug(smartPlugConfig);
         }
 
         /**
