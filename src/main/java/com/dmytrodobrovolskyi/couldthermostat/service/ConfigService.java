@@ -3,7 +3,6 @@ package com.dmytrodobrovolskyi.couldthermostat.service;
 import com.dmytrodobrovolskyi.couldthermostat.model.Config;
 import com.dmytrodobrovolskyi.couldthermostat.repository.ConfigRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,7 +30,6 @@ public class ConfigService {
         return Optional.ofNullable(getAllGroupingByDeviceKey().get(deviceKey));
     }
     
-    @CacheEvict(value = "tapo-p100-plug-cache", keyGenerator = "tapoCacheKeyGenerator")
     public Config saveConfig(Config config) {
         return configRepository.saveConfig(config);
     }
