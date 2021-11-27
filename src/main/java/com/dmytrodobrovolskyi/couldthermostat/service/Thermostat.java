@@ -70,7 +70,7 @@ public class Thermostat {
         return Optional.ofNullable(config.getAdditionalData())
                 .flatMap(Config.AdditionalData::getSynchronizeWith)
                 .flatMap(configService::getConfigByDeviceKey)
-                .map(syncDeviceConfig -> isCooledEnough(syncDeviceConfig, thermometer.temperature(syncDeviceConfig)))
+                .map(syncDeviceConfig -> thermometer.temperature(syncDeviceConfig) < syncDeviceConfig.getMaxTemperature())
                 .orElse(true);
     }
 
