@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Service
@@ -43,7 +44,7 @@ public class Thermostat {
                 cooler.get().turnOn(config.getCoolerConfig());
 
                 log.info("It's too hot but no worries it's gonna be all right. Turning on the cooler!");
-            } else if (isCooledEnough(config, currentTemperature)) {
+            } else if (shouldTurnOffCooler(config, currentTemperature, cooler.get())) {
                 cooler.get().turnOff(config.getCoolerConfig());
 
                 log.info("Looks like we did the job well. Turning off the cooler");
@@ -51,12 +52,12 @@ public class Thermostat {
                 log.info("Continuing with the current cooling mode");
             }
         }
-        if (heater.isPresent() && syncDeviceIsCoolEnough(config)) {
-            if (heater.get().isOff(config.getHeaterConfig()) && isTooCool(config, currentTemperature)) {
+        if (heater.isPresent()) {
+            if (shouldTurnOnHeater(config, currentTemperature, heater.get())) {
                 heater.get().turnOn(config.getHeaterConfig());
 
                 log.info("It's too cool but no worries it's gonna be all right. Turning on the heater!");
-            } else if (isHeatedEnough(config, currentTemperature)) {
+            } else if (heater.get().isOn(config.getHeaterConfig()) && isHeatedEnough(config, currentTemperature)) {
                 heater.get().turnOff(config.getHeaterConfig());
 
                 log.info("Looks like we did the job well. Turning off the heater");
@@ -66,11 +67,23 @@ public class Thermostat {
         }
     }
 
-    private boolean syncDeviceIsCoolEnough(Config config) {
+    private boolean shouldTurnOnHeater(Config config, double currentTemperature, Switch heater) {
+        return heater.isOff(config.getHeaterConfig())
+                && isTooCool(config, currentTemperature)
+                && syncDeviceIs(config, syncDeviceConfig -> thermometer.temperature(syncDeviceConfig) < syncDeviceConfig.getMaxTemperature());
+    }
+
+    private boolean shouldTurnOffCooler(Config config, double currentTemperature, Switch cooler) {
+        return cooler.isOn(config.getCoolerConfig())
+                && isCooledEnough(config, currentTemperature)
+                && syncDeviceIs(config, syncDeviceConfig -> isCooledEnough(syncDeviceConfig, thermometer.temperature(syncDeviceConfig)));
+    }
+
+    private boolean syncDeviceIs(Config config, Function<Config, Boolean> syncFunction) {
         return Optional.ofNullable(config.getAdditionalData())
                 .flatMap(Config.AdditionalData::getSynchronizeWith)
                 .flatMap(configService::getConfigByDeviceKey)
-                .map(syncDeviceConfig -> thermometer.temperature(syncDeviceConfig) < syncDeviceConfig.getMaxTemperature())
+                .map(syncFunction)
                 .orElse(true);
     }
 

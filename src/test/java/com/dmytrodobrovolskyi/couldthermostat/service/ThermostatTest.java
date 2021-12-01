@@ -206,8 +206,7 @@ class ThermostatTest {
 
         when(configService.getAllConfigs()).thenReturn(List.of(blackTiltConfig, orangeTiltConfig));
         when(configService.getConfigByDeviceKey(blackTiltConfig.getMeasuringDeviceKey())).thenReturn(Optional.of(blackTiltConfig));
-        when(configService.getConfigByDeviceKey(orangeTiltConfig.getMeasuringDeviceKey())).thenReturn(Optional.of(orangeTiltConfig));
-        
+
         when(thermometer.temperature(blackTiltConfig)).thenReturn(69d);
         when(thermometer.temperature(orangeTiltConfig)).thenReturn(66d);
 
