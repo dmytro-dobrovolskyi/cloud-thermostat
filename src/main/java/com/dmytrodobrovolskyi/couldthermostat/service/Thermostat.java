@@ -83,6 +83,7 @@ public class Thermostat {
         return Optional.ofNullable(config.getAdditionalData())
                 .flatMap(Config.AdditionalData::getSynchronizeWith)
                 .flatMap(configService::getConfigByDeviceKey)
+                .filter(Config::isEnabled)
                 .map(syncFunction)
                 .orElse(true);
     }
